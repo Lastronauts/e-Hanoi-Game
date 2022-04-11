@@ -1,0 +1,82 @@
+version: 2.1
+
+executors:
+  default:
+    docker:
+      - image: "cimg/rust:1.58.1"
+
+jobs:
+  lint:
+    executor: "default"
+    steps:
+      - "checkout"
+      - run: "sudo apt-get update"
+      - run: "sudo apt-get install -y libasound2-dev portaudio19-dev build-essential libpulse-dev libdbus-1-dev"
+      - run: "sudo apt-get install -y libudev-dev pkg-config"
+      - run: "rustup component add clippy"
+      - run: "cargo clippy"
+  build:
+    executor: "default"
+    parameters:
+      release:
+        type: "boolean"
+        default: false
+    steps:
+      - "checkout"
+      - restore_cache:
+          key: 'v1-cargo-lock-{{ checksum "Cargo.lock"}}<<# parameters.release >>-release<</ parameters.release>>'
+      - run: "sudo apt-get update"
+      - run: "sudo apt-get install -y libasound2-dev portaudio19-dev build-essential libpulse-dev libdbus-1-dev"
+      - run: "sudo apt-get install -y libudev-dev pkg-config"
+      - run: "cargo build <<# parameters.release >>--release --locked<</ parameters.release>>"
+      - save_cache:
+          key: 'v1-cargo-lock-{{ checksum "Cargo.lock"}}<<# parameters.release >>-release<</ parameters.release>>'
+          paths:
+            - "/usr/local/cargo/registry"
+            - "target/"
+  test:
+    executor: "default"
+    parameters:
+      release:
+        type: "boolean"
+        default: false
+    steps:
+      - "checkout"
+      - restore_cache:
+          key: 'v1-cargo-lock-{{ checksum "Cargo.lock"}}<<# parameters.release >>-release<</ parameters.release>>'
+      - run: "sudo apt-get update"
+      - run: "sudo apt-get install -y libasound2-dev portaudio19-dev build-essential libpulse-dev libdbus-1-dev"
+      - run: "sudo apt-get install -y libudev-dev pkg-config"
+      - run: "cargo --version"
+      - run:
+          name: "run tests"
+          command: "cargo test -- --nocapture"
+      - save_cache:
+          key: 'v1-cargo-lock-{{ checksum "Cargo.lock"}}<<# parameters.release >>-release<</ parameters.release>>'
+          paths:
+            - "/usr/local/cargo/registry"
+            - "target/"
+
+workflows:
+  version: 2
+  run_test: # 全てのbranchで実行される.
+    jobs:
+      - "lint"
+      - "build"
+      - "test"
+  release: # タグがpushされたときに実行される.
+    jobs:
+      - build:
+          release: true
+          filters:
+            branches:
+              ignore: "/.*/"
+            tags:
+              only: '/^v\d+\.\d+\.\d+/'
+      - test:
+          release: true
+          requires:
+            - "build"
+          filters:
+            tags:
+              only: '/^v\d+\.\d+\.\d+/'
