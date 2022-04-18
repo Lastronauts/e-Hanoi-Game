@@ -1225,6 +1225,7 @@ dependencies = [
  "anyhow",
  "bevy",
  "dotenv",
+ "rand",
 ]
 
 [[package]]

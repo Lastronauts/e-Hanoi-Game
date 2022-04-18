@@ -10,6 +10,7 @@ edition = "2021"
 anyhow = "1.0.56"
 bevy = "0.6.1"
 dotenv = "0.15.0"
+rand = "0.8.5"
 
 [profile.release]
 opt-level = "z"
