@@ -3,6 +3,7 @@ name = "e-hanoi-game"
 version = "0.1.0"
 authors = ["Lastronauts <lastronauts@outlook.jp>"]
 edition = "2021"
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,6 +12,9 @@ anyhow = "1.0.56"
 bevy = "0.6.1"
 dotenv = "0.15.0"
 rand = "0.8.5"
+
+[build-dependencies]
+winres = "0.1"
 
 [profile.release]
 opt-level = "z"
