@@ -63,6 +63,8 @@ pub fn spawn_entities(
     for i in disk_order {
         match die.sample(&mut rng) {
             0 => {
+
+                // 左のポールのディスク
                 commands
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
@@ -71,6 +73,8 @@ pub fn spawn_entities(
                         step: rods.left.disk_num,
                     })
                     .insert(GameEntity);
+
+                // 左のポールのディスクの文字
                 commands
                     .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
                     .insert(Disk(i))
@@ -84,6 +88,8 @@ pub fn spawn_entities(
                 rods.left.disk_num += 1;
             }
             1 => {
+
+                // 真ん中のポールのディスク
                 commands
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
@@ -92,6 +98,8 @@ pub fn spawn_entities(
                         step: rods.center.disk_num,
                     })
                     .insert(GameEntity);
+
+                // 真ん中のポールのディスクの文字
                 commands
                     .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
                     .insert(Disk(i))
@@ -105,6 +113,8 @@ pub fn spawn_entities(
             }
             2 => {
                 commands
+
+                // 右のポールのディスク
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
                     .insert(Position {
@@ -112,6 +122,8 @@ pub fn spawn_entities(
                         step: rods.right.disk_num,
                     })
                     .insert(GameEntity);
+
+                // 右のポールのディスクの文字
                 commands
                     .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
                     .insert(Disk(i))
