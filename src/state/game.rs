@@ -23,7 +23,7 @@ pub struct GameEntity;
 pub struct Disk(i32);
 
 #[derive(Component)]
-pub struct Position{
+pub struct Position {
     pub rod: i32,
     pub step: i32,
 }
@@ -64,24 +64,17 @@ pub fn spawn_entities(
         match die.sample(&mut rng) {
             0 => {
                 commands
-                    .spawn_bundle(disk_sprite(
-                        disk_color[i as usize],
-                        i,
-                    ))
+                    .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
-                    .insert(Position{
+                    .insert(Position {
                         rod: 0,
                         step: rods.left.disk_num,
                     })
                     .insert(GameEntity);
                 commands
-                    .spawn_bundle(disk_text(
-                        text_style.clone(),
-                        text_alignment,
-                        i,
-                    ))
+                    .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
                     .insert(Disk(i))
-                    .insert(Position{
+                    .insert(Position {
                         rod: 0,
                         step: rods.left.disk_num,
                     })
@@ -92,24 +85,17 @@ pub fn spawn_entities(
             }
             1 => {
                 commands
-                .spawn_bundle(disk_sprite(
-                    disk_color[i as usize],
-                    i,
-                ))
-                .insert(Disk(i))
-                .insert(Position{
-                    rod: 1,
-                    step: rods.center.disk_num,
-                })
-                .insert(GameEntity);
-                commands
-                    .spawn_bundle(disk_text(
-                        text_style.clone(),
-                        text_alignment,
-                        i,
-                    ))
+                    .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
-                    .insert(Position{
+                    .insert(Position {
+                        rod: 1,
+                        step: rods.center.disk_num,
+                    })
+                    .insert(GameEntity);
+                commands
+                    .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
+                    .insert(Disk(i))
+                    .insert(Position {
                         rod: 1,
                         step: rods.center.disk_num,
                     })
@@ -119,24 +105,17 @@ pub fn spawn_entities(
             }
             2 => {
                 commands
-                .spawn_bundle(disk_sprite(
-                    disk_color[i as usize],
-                    i,
-                ))
-                .insert(Disk(i))
-                .insert(Position{
-                    rod: 2,
-                    step: rods.right.disk_num,
-                })
-                .insert(GameEntity);
-                commands
-                    .spawn_bundle(disk_text(
-                        text_style.clone(),
-                        text_alignment,
-                        i,
-                    ))
+                    .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
-                    .insert(Position{
+                    .insert(Position {
+                        rod: 2,
+                        step: rods.right.disk_num,
+                    })
+                    .insert(GameEntity);
+                commands
+                    .spawn_bundle(disk_text(text_style.clone(), text_alignment, i))
+                    .insert(Disk(i))
+                    .insert(Position {
                         rod: 2,
                         step: rods.right.disk_num,
                     })
@@ -163,11 +142,7 @@ fn disk_sprite(disk_color: Color, disk: i32) -> SpriteBundle {
     }
 }
 
-fn disk_text(
-    text_style: TextStyle,
-    text_alignment: TextAlignment,
-    disk: i32,
-) -> Text2dBundle {
+fn disk_text(text_style: TextStyle, text_alignment: TextAlignment, disk: i32) -> Text2dBundle {
     Text2dBundle {
         text: Text::with_section(
             format!("{}", disk + 1),
@@ -180,5 +155,3 @@ fn disk_text(
         ..Default::default()
     }
 }
-
-pub fn disk_movement()
