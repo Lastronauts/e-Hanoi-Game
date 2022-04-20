@@ -9,21 +9,21 @@ fn main() {
             title: "e-Hanoi".to_string(),
             ..Default::default()
         })
-        .insert_resource(ClearColor(Color::NAVY))
+        .insert_resource(ClearColor(Color::ANTIQUE_WHITE))
         .insert_resource(home::ButtonNow(home::ButtonMarker::Free))
         .insert_resource(DiskNumber(8))
         .insert_resource(game::Rods {
             left: game::Rod {
-                DiskNum: 0,
-                Disks: Vec::new(),
+                disk_num: 0,
+                disks: Vec::new(),
             },
             center: game::Rod {
-                DiskNum: 0,
-                Disks: Vec::new(),
+                disk_num: 0,
+                disks: Vec::new(),
             },
             right: game::Rod {
-                DiskNum: 0,
-                Disks: Vec::new(),
+                disk_num: 0,
+                disks: Vec::new(),
             },
         })
         .add_plugins(DefaultPlugins)
@@ -45,5 +45,6 @@ fn main() {
                 ),
         )
         .add_system_set(SystemSet::on_exit(AppState::Home).with_system(home::despawn_entities))
+        .add_system_set(SystemSet::on_enter(AppState::Free).with_system(game::spawn_entities))
         .run();
 }

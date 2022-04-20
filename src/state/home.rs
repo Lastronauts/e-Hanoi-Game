@@ -37,6 +37,7 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
         horizontal: HorizontalAlign::Center,
     };
     for (tex, tra, col, mark) in button.iter() {
+        // タイトル画面にある塔のディスクの文字
         commands
             .spawn_bundle(Text2dBundle {
                 text: Text::with_section(
@@ -55,6 +56,8 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             .insert(HomeEntity)
             .insert(*mark);
+
+        // タイトル画面にある塔のディスク
         commands
             .spawn_bundle(SpriteBundle {
                 sprite: Sprite {
@@ -71,10 +74,12 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             .insert(HomeEntity)
             .insert(*mark);
     }
+
+    // タイトル画面にある塔のポール
     commands
         .spawn_bundle(SpriteBundle {
             sprite: Sprite {
-                color: Color::ANTIQUE_WHITE,
+                color: Color::BISQUE,
                 ..Default::default()
             },
             transform: Transform {
@@ -85,6 +90,8 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..Default::default()
         })
         .insert(HomeEntity);
+
+    // タイトル画面にある"e-Hanoi"のテキスト
     commands
         .spawn_bundle(Text2dBundle {
             text: Text::with_section("e-Hanoi", text_style, text_alignment),
@@ -116,8 +123,8 @@ pub fn cursol_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input
 pub fn cursor_movement(mut texts: Query<(&mut Text, &ButtonMarker)>, button_now: Res<ButtonNow>) {
     for (mut text, mark) in texts.iter_mut() {
         if *mark == button_now.0 {
-            (*text).sections[0].style.color = Color::BLACK;
-            (*text).sections[0].style.font_size = 65.0;
+            (*text).sections[0].style.color = Color::INDIGO;
+            (*text).sections[0].style.font_size = 60.0;
         } else {
             (*text).sections[0].style.color = Color::WHITE;
             (*text).sections[0].style.font_size = 50.0;
