@@ -17,6 +17,9 @@ pub struct Rods {
 }
 
 #[derive(Component)]
+pub struct GameEntity;
+
+#[derive(Component)]
 pub struct Disk(i32);
 
 #[derive(Component)]
@@ -50,8 +53,8 @@ pub fn spawn_entities(
         Color::MAROON,
         Color::LIME_GREEN,
         Color::RED,
-        Color::BLUE,
-        Color::BLUE,
+        Color::SILVER,
+        Color::VIOLET,
     ];
     let mut rng = thread_rng();
     let mut disk_order: Vec<i32> = (0..disk_number.0).collect();
@@ -69,7 +72,8 @@ pub fn spawn_entities(
                     .insert(Position{
                         rod: 0,
                         step: rods.left.disk_num,
-                    });
+                    })
+                    .insert(GameEntity);
                 commands
                     .spawn_bundle(disk_text(
                         text_style.clone(),
@@ -80,7 +84,8 @@ pub fn spawn_entities(
                     .insert(Position{
                         rod: 0,
                         step: rods.left.disk_num,
-                    });
+                    })
+                    .insert(GameEntity);
 
                 rods.left.disks.push(i);
                 rods.left.disk_num += 1;
@@ -95,7 +100,8 @@ pub fn spawn_entities(
                 .insert(Position{
                     rod: 1,
                     step: rods.center.disk_num,
-                });
+                })
+                .insert(GameEntity);
                 commands
                     .spawn_bundle(disk_text(
                         text_style.clone(),
@@ -106,7 +112,8 @@ pub fn spawn_entities(
                     .insert(Position{
                         rod: 1,
                         step: rods.center.disk_num,
-                    });
+                    })
+                    .insert(GameEntity);
                 rods.center.disk_num += 1;
                 rods.center.disks.push(i);
             }
@@ -120,7 +127,8 @@ pub fn spawn_entities(
                 .insert(Position{
                     rod: 2,
                     step: rods.right.disk_num,
-                });
+                })
+                .insert(GameEntity);
                 commands
                     .spawn_bundle(disk_text(
                         text_style.clone(),
@@ -131,7 +139,8 @@ pub fn spawn_entities(
                     .insert(Position{
                         rod: 2,
                         step: rods.right.disk_num,
-                    });
+                    })
+                    .insert(GameEntity);
                 rods.right.disk_num += 1;
                 rods.right.disks.push(i);
             }
