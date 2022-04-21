@@ -9,7 +9,8 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.56"
 bevy = "0.6.1"
-dotenv = "0.15.0"
+serde = "1.0.136"
+serde_json = "1.0.79"
 
 [profile.release]
 opt-level = "z"
@@ -21,3 +22,5 @@ panic = "unwind"
 incremental = false
 codegen-units = 1
 rpath = false
+
+[features]
