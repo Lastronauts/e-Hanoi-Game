@@ -20,11 +20,17 @@ pub struct Rods {
 pub struct GameEntity;
 
 #[derive(Component)]
+pub struct SpriteEntity;
+
+#[derive(Component)]
+pub struct TextEntity;
+
+#[derive(Component)]
 pub struct Disk(i32);
 
-pub enum DiskCondition{
-    placed(i32),
-    lifted,
+pub enum DiskCondition {
+    Placed(i32),
+    Lifted,
 }
 
 #[derive(Component)]
@@ -68,16 +74,16 @@ pub fn spawn_entities(
     for i in disk_order {
         match die.sample(&mut rng) {
             0 => {
-
                 // 左のポールのディスク
                 commands
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 0,
-                        height: DiskCondition::placed(rods.left.disk_num),
+                        height: DiskCondition::Placed(rods.left.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(SpriteEntity);
 
                 // 左のポールのディスクの文字
                 commands
@@ -85,24 +91,25 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 0,
-                        height: DiskCondition::placed(rods.left.disk_num),
+                        height: DiskCondition::Placed(rods.left.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(TextEntity);
 
                 rods.left.disks.push(i);
                 rods.left.disk_num += 1;
             }
             1 => {
-
                 // 真ん中のポールのディスク
                 commands
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 1,
-                        height: DiskCondition::placed(rods.center.disk_num),
+                        height: DiskCondition::Placed(rods.center.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(SpriteEntity);
 
                 // 真ん中のポールのディスクの文字
                 commands
@@ -110,23 +117,25 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 1,
-                        height: DiskCondition::placed(rods.center.disk_num),
+                        height: DiskCondition::Placed(rods.center.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(TextEntity);
+
                 rods.center.disk_num += 1;
                 rods.center.disks.push(i);
             }
             2 => {
                 commands
-
-                // 右のポールのディスク
+                    // 右のポールのディスク
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 2,
-                        height: DiskCondition::placed(rods.right.disk_num),
+                        height: DiskCondition::Placed(rods.right.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(SpriteEntity);
 
                 // 右のポールのディスクの文字
                 commands
@@ -134,13 +143,15 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 2,
-                        height: DiskCondition::placed(rods.right.disk_num),
+                        height: DiskCondition::Placed(rods.right.disk_num),
                     })
-                    .insert(GameEntity);
+                    .insert(GameEntity)
+                    .insert(TextEntity);
+
                 rods.right.disk_num += 1;
                 rods.right.disks.push(i);
             }
-            _ => {}
+            i => eprintln!("Unexpected value detected: {}", i),
         }
     }
 }
@@ -152,7 +163,7 @@ fn disk_sprite(disk_color: Color, disk: i32) -> SpriteBundle {
             ..Default::default()
         },
         transform: Transform {
-            scale: Vec3::new(80.0 + (disk as f32) * 30.0, 60.0, 0.0),
+            scale: Vec3::new(80.0 + (disk as f32) * 30.0, 50.0, 0.0),
             ..Default::default()
         },
         ..Default::default()
@@ -174,7 +185,29 @@ fn disk_text(text_style: TextStyle, text_alignment: TextAlignment, disk: i32) ->
 }
 
 pub fn disk_movement(
-
-){
-
+    mut text: Query<(&Position, &mut Transform), With<TextEntity>>,
+    mut rect: Query<(&Position, &mut Transform), Without<TextEntity>>,
+) {
+    for (pos, mut transform) in text.iter_mut() {
+        match pos.height {
+            DiskCondition::Placed(i) => {
+                transform.translation =
+                    Vec3::new((-400 + pos.rod * 400) as f32, (-240 + i * 50) as f32, 10.0)
+            }
+            DiskCondition::Lifted => {
+                transform.translation = Vec3::new((-400 + pos.rod * 400) as f32, 240.0, 10.0)
+            }
+        }
+    }
+    for (pos, mut transform) in rect.iter_mut() {
+        match pos.height {
+            DiskCondition::Placed(i) => {
+                transform.translation =
+                    Vec3::new((-400 + pos.rod * 400) as f32, (-240 + i * 50) as f32, 9.0)
+            }
+            DiskCondition::Lifted => {
+                transform.translation = Vec3::new((-400 + pos.rod * 400) as f32, 240.0, 9.0)
+            }
+        }
+    }
 }
