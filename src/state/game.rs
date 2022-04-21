@@ -22,10 +22,15 @@ pub struct GameEntity;
 #[derive(Component)]
 pub struct Disk(i32);
 
+pub enum DiskCondition{
+    placed(i32),
+    lifted,
+}
+
 #[derive(Component)]
 pub struct Position {
     pub rod: i32,
-    pub step: i32,
+    pub height: DiskCondition,
 }
 
 pub fn spawn_entities(
@@ -70,7 +75,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 0,
-                        step: rods.left.disk_num,
+                        height: DiskCondition::placed(rods.left.disk_num),
                     })
                     .insert(GameEntity);
 
@@ -80,7 +85,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 0,
-                        step: rods.left.disk_num,
+                        height: DiskCondition::placed(rods.left.disk_num),
                     })
                     .insert(GameEntity);
 
@@ -95,7 +100,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 1,
-                        step: rods.center.disk_num,
+                        height: DiskCondition::placed(rods.center.disk_num),
                     })
                     .insert(GameEntity);
 
@@ -105,7 +110,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 1,
-                        step: rods.center.disk_num,
+                        height: DiskCondition::placed(rods.center.disk_num),
                     })
                     .insert(GameEntity);
                 rods.center.disk_num += 1;
@@ -119,7 +124,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 2,
-                        step: rods.right.disk_num,
+                        height: DiskCondition::placed(rods.right.disk_num),
                     })
                     .insert(GameEntity);
 
@@ -129,7 +134,7 @@ pub fn spawn_entities(
                     .insert(Disk(i))
                     .insert(Position {
                         rod: 2,
-                        step: rods.right.disk_num,
+                        height: DiskCondition::placed(rods.right.disk_num),
                     })
                     .insert(GameEntity);
                 rods.right.disk_num += 1;
@@ -166,4 +171,10 @@ fn disk_text(text_style: TextStyle, text_alignment: TextAlignment, disk: i32) ->
         ),
         ..Default::default()
     }
+}
+
+pub fn disk_movement(
+
+){
+
 }
