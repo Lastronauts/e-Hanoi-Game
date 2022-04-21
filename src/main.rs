@@ -46,6 +46,10 @@ fn main() {
         )
         .add_system_set(SystemSet::on_exit(AppState::Home).with_system(home::despawn_entities))
         .add_system_set(SystemSet::on_enter(AppState::Free).with_system(game::spawn_entities))
-        .add_system_set(SystemSet::on_update(AppState::Free).with_system(game::disk_movement))
+        .add_system_set(
+            SystemSet::on_update(AppState::Free)
+                .with_system(game::rect_movement)
+                .with_system(game::text_movement),
+        )
         .run();
 }
