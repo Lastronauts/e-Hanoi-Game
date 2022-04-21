@@ -11,6 +11,7 @@ build = "build.rs"
 anyhow = "1.0.56"
 bevy = "0.6.1"
 dotenv = "0.15.0"
+rand = "0.8.5"
 
 [build-dependencies]
 winres = "0.1"
