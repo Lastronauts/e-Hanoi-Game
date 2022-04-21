@@ -26,6 +26,7 @@ fn main() {
                 disks: Vec::new(),
             },
         })
+        .insert_resource(game::IsHoldingElseChoosing(false))
         .add_plugins(DefaultPlugins)
         .add_state(AppState::Home)
         .add_startup_system(setup::camera)

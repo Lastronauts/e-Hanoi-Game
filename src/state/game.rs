@@ -5,6 +5,8 @@ use rand::thread_rng;
 
 use super::DiskNumber;
 
+pub struct IsHoldingElseChoosing(pub bool);
+
 pub struct Rod {
     pub disk_num: i32,
     pub disks: Vec<i32>,
@@ -121,8 +123,8 @@ pub fn spawn_entities(
                 rods.center.disks.push(i);
             }
             2 => {
+                // 右のポールのディスク
                 commands
-                    // 右のポールのディスク
                     .spawn_bundle(disk_sprite(disk_color[i as usize], i))
                     .insert(Disk(i))
                     .insert(RectPosition(Position {
