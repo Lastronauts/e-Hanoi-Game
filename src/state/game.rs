@@ -40,7 +40,7 @@ pub fn spawn_entities(
                 rods.right.DiskNum += 1;
                 rods.right.Disks.push(i);
             }
-            _ => {}
+            i => eprintln!("Unexpected value detected: {}", i),
         }
     }
 }
