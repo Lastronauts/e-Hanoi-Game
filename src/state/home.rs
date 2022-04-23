@@ -104,18 +104,18 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(HomeEntity);
 }
 
-pub fn cursol_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input<KeyCode>>) {
+pub fn cursor_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Down) {
-        if button_now.0 == ButtonMarker::Exit {
-            button_now.0 = ButtonMarker::Free;
-        } else if button_now.0 == ButtonMarker::Free {
-            button_now.0 = ButtonMarker::Ranking;
+        match button_now.0 {
+            ButtonMarker::Exit => button_now.0 = ButtonMarker::Free,
+            ButtonMarker::Free => button_now.0 = ButtonMarker::Ranking,
+            ButtonMarker::Ranking => {}
         }
     } else if keyboard_input.just_pressed(KeyCode::Up) {
-        if button_now.0 == ButtonMarker::Free {
-            button_now.0 = ButtonMarker::Exit;
-        } else if button_now.0 == ButtonMarker::Ranking {
-            button_now.0 = ButtonMarker::Free;
+        match button_now.0 {
+            ButtonMarker::Exit => {}
+            ButtonMarker::Free => button_now.0 = ButtonMarker::Exit,
+            ButtonMarker::Ranking => button_now.0 = ButtonMarker::Free,
         }
     }
 }
