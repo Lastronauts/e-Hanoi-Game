@@ -3,9 +3,12 @@ use serde::Serialize;
 use std::fs::File;
 use std::io::BufWriter;
 use std::process::Command;
+use std::env;
 
-pub fn send_clear_time(token: String, clear_time: i64) -> Result<()> {
-    json_to_file(token, clear_time)?;
+pub fn send_clear_time(clear_time: i64) -> Result<()> {
+    let args: Vec<String> = env::args().collect();
+    let token=args.get(1).expect("Error: Too few arguments.");
+    json_to_file(token.to_string(), clear_time)?;
 
     let target = "./graphql.exe";
     match Command::new(target).arg("create_score").spawn() {
