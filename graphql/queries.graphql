@@ -1,0 +1,8 @@
+mutation CreateScore($new_score: NewScore!) {
+  createScore(newScore: $new_score) {
+    id
+    userID
+    clearTime
+    createdAt
+  }
+}

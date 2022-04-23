@@ -1,5 +1,8 @@
+#![windows_subsystem = "windows"]
+
 mod setup;
 mod state;
+mod graphql;
 use bevy::prelude::*;
 use state::*;
 
