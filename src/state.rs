@@ -8,8 +8,8 @@ pub enum AppState {
     //states' enum
     Home,
     CountDown,
-    Free,
-    Ranking,
+    Game,
+    Clear,
     // Paused,
 }
 

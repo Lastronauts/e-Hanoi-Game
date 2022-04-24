@@ -14,7 +14,7 @@ fn main() {
         })
         .insert_resource(ClearColor(Color::ANTIQUE_WHITE))
         .insert_resource(home::ButtonNow(home::ButtonMarker::Free))
-        .insert_resource(DiskNumber(8))
+        .insert_resource(DiskNumber(3))
         .insert_resource(game::CursorRod(game::WhichRod::Center))
         .insert_resource(game::Rods {
             left: game::Rod {
@@ -37,6 +37,7 @@ fn main() {
             height: game::DiskCondition::Placed(0),
         }))
         .insert_resource(game::StartTime(0.0))
+        .insert_resource(game::IsRanking(false))
         .add_plugins(DefaultPlugins)
         .add_state(AppState::Home)
         .add_startup_system(setup::camera)
@@ -64,12 +65,12 @@ fn main() {
         )
         .add_system_set(SystemSet::on_exit(AppState::CountDown).with_system(countdown::despawn))
         .add_system_set(
-            SystemSet::on_enter(AppState::Free)
+            SystemSet::on_enter(AppState::Game)
                 .with_system(game::spawn_entities)
                 .with_system(game::setup),
         )
         .add_system_set(
-            SystemSet::on_update(AppState::Free)
+            SystemSet::on_update(AppState::Game)
                 .with_system(game::output_time)
                 .with_system(game::top_disk.label(game::Label::TopDisk))
                 .with_system(
@@ -92,9 +93,14 @@ fn main() {
                         .label(game::Label::Input)
                         .after(game::Label::CursoredDiskChange),
                 )
+                .with_system(
+                    game::is_clear
+                        .label(game::Label::IsClear)
+                        .after(game::Label::Input),
+                )
                 .with_system(game::rect_translation)
                 .with_system(game::text_translation),
         )
-        .add_system_set(SystemSet::on_exit(AppState::Free).with_system(game::despawn_entities))
+        .add_system_set(SystemSet::on_exit(AppState::Game).with_system(game::despawn_entities))
         .run();
 }

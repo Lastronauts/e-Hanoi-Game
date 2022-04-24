@@ -3,7 +3,9 @@ use rand::distributions::{Distribution, Uniform};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
-use super::DiskNumber;
+use super::{AppState, DiskNumber};
+
+pub struct IsRanking(pub bool);
 
 pub struct Timer(pub Time);
 
@@ -76,6 +78,7 @@ pub enum Label {
     CursoredDiskChange,
     CursorChange,
     Input,
+    IsClear,
 }
 
 pub fn spawn_entities(
@@ -149,6 +152,7 @@ pub fn spawn_entities(
             },
             ..Default::default()
         })
+        .insert(GameEntity)
         .insert(TimeText);
 
     // どのポールを選んでいるかを示すスプライト
@@ -164,6 +168,7 @@ pub fn spawn_entities(
             },
             ..Default::default()
         })
+        .insert(GameEntity)
         .insert(Cursor);
 
     for i in disk_order {
@@ -524,6 +529,18 @@ pub fn input(
                 }
             }
         }
+    }
+}
+
+pub fn is_clear(disks: Query<(&IsTop, &Disk), With<Text>>, mut app_state: ResMut<State<AppState>>) {
+    let mut max = -1;
+    for (top_boo, num) in disks.iter() {
+        if top_boo.0 && max < num.0 {
+            max = num.0;
+        }
+    }
+    if max == 0 {
+        app_state.set(AppState::Clear).unwrap();
     }
 }
 

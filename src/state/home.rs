@@ -1,4 +1,4 @@
-use super::AppState;
+use super::{game, AppState};
 use bevy::{app::AppExit, prelude::*};
 
 #[derive(Component)]
@@ -137,6 +137,7 @@ pub fn choosing_input(
     keyboard_input: Res<Input<KeyCode>>,
     mut event_writer: EventWriter<bevy::app::AppExit>,
     mut app_state: ResMut<State<AppState>>,
+    mut is_ranking: ResMut<game::IsRanking>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         match button_now.0 {
@@ -144,10 +145,12 @@ pub fn choosing_input(
                 event_writer.send(AppExit);
             }
             ButtonMarker::Free => {
+                is_ranking.0 = false;
                 app_state.set(AppState::CountDown).unwrap();
             }
             ButtonMarker::Ranking => {
-                app_state.set(AppState::Ranking).unwrap();
+                is_ranking.0 = true;
+                app_state.set(AppState::CountDown).unwrap();
             }
         }
     }

@@ -32,7 +32,7 @@ pub fn count_down(mut ent: Query<(&mut Text, &mut Time)>, mut app_state: ResMut<
     for (mut text, mut tim) in ent.iter_mut() {
         tim.0 -= 1;
         if tim.0 < 1 {
-            app_state.set(AppState::Free).unwrap();
+            app_state.set(AppState::Game).unwrap();
         }
         (*text).sections[0].value = format!("{}", tim.0);
     }
