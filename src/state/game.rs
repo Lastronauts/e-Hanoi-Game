@@ -11,6 +11,7 @@ pub struct Timer(pub Time);
 
 pub struct StartTime(pub f64);
 
+#[derive(Clone)]
 pub struct TimeNow(pub i64);
 
 pub struct IsHolding(pub bool);

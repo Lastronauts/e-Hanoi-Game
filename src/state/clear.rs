@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, tasks::AsyncComputeTaskPool};
 
 use crate::graphql::send_clear_time;
 
@@ -16,6 +16,7 @@ pub fn spawn(
     asset_server: Res<AssetServer>,
     clear_time: Res<TimeNow>,
     is_ranking: Res<game::IsRanking>,
+    thread_pool: Res<AsyncComputeTaskPool>,
 ) {
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
     let text_style = TextStyle {
@@ -60,7 +61,16 @@ pub fn spawn(
         .insert(ClearEntity);
 
     if is_ranking.0 {
-        send_clear_time(clear_time.0).unwrap();
+        let time=clear_time.clone();
+        let task = thread_pool.spawn(async move {
+            let query_res = send_clear_time(time.0.clone());
+
+            if let Err(err) = query_res {
+                eprintln!("Error: failed to execute query");
+                eprintln!("detail...\n{}", err);
+            }
+        });
+        commands.spawn().insert(task);
     }
 }
 
