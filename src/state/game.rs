@@ -296,6 +296,8 @@ pub fn top_disk(mut disks: Query<(&Position, &mut IsTop)>) {
                     }
                 }
             }
+        } else {
+            top_boo.0 = false;
         }
     }
 }
@@ -390,7 +392,6 @@ pub fn input(
             let mut disk_num = -1;
             for (pos, _, num, top_boo) in disks.iter() {
                 if pos.rod == cursor_rod.0 && top_boo.0 {
-                    println!("top = {}", num.0);
                     top_num = num.0;
                     if let DiskCondition::Placed(i) = pos.height {
                         disk_num = i;
@@ -400,10 +401,8 @@ pub fn input(
             for (mut pos, _, num, _) in disks.iter_mut() {
                 if pos.height == DiskCondition::Lifted {
                     if num.0 > top_num {
-                        println!("{} > {}", num.0, top_num);
                         *pos = where_disk_was.0.clone();
                     } else {
-                        println!("{} <= {}", num.0, top_num);
                         pos.height = DiskCondition::Placed(disk_num + 1);
                     }
                 }

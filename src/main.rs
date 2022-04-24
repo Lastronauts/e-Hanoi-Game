@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 
 mod graphql;
 mod setup;
@@ -7,6 +7,7 @@ use bevy::{core::FixedTimestep, prelude::*};
 use state::*;
 
 fn main() {
+    println!("main!");
     App::new()
         .insert_resource(WindowDescriptor {
             title: "e-Hanoi".to_string(),
