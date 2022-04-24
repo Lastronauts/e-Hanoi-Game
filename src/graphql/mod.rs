@@ -1,13 +1,13 @@
 use anyhow::{bail, Result};
 use serde::Serialize;
+use std::env;
 use std::fs::File;
 use std::io::BufWriter;
 use std::process::Command;
-use std::env;
 
 pub fn send_clear_time(clear_time: i64) -> Result<()> {
     let args: Vec<String> = env::args().collect();
-    let token=args.get(1).expect("Error: Too few arguments.");
+    let token = args.get(1).expect("Error: Too few arguments.");
     json_to_file(token.to_string(), clear_time)?;
 
     let target = "./graphql.exe";

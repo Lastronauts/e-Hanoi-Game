@@ -1,9 +1,9 @@
 #![windows_subsystem = "windows"]
 
+mod graphql;
 mod setup;
 mod state;
-mod graphql;
-use bevy::prelude::*;
+use bevy::{core::FixedTimestep, prelude::*};
 use state::*;
 
 fn main() {
@@ -54,6 +54,13 @@ fn main() {
                 ),
         )
         .add_system_set(SystemSet::on_exit(AppState::Home).with_system(home::despawn_entities))
+        .add_system_set(SystemSet::on_enter(AppState::CountDown).with_system(countdown::spawn))
+        .add_system_set(
+            SystemSet::on_update(AppState::CountDown)
+                .with_run_criteria(FixedTimestep::step(1.0))
+                .with_system(countdown::count_down),
+        )
+        .add_system_set(SystemSet::on_exit(AppState::CountDown).with_system(countdown::despawn))
         .add_system_set(
             SystemSet::on_enter(AppState::Free)
                 .with_system(game::spawn_entities)

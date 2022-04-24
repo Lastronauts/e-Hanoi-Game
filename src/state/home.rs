@@ -144,7 +144,7 @@ pub fn choosing_input(
                 event_writer.send(AppExit);
             }
             ButtonMarker::Free => {
-                app_state.set(AppState::Free).unwrap();
+                app_state.set(AppState::CountDown).unwrap();
             }
             ButtonMarker::Ranking => {
                 app_state.set(AppState::Ranking).unwrap();
