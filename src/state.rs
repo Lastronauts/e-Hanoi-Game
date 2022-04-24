@@ -1,4 +1,6 @@
 // use bevy::prelude::*;
+pub mod clear;
+pub mod countdown;
 pub mod game;
 pub mod home;
 
@@ -6,8 +8,9 @@ pub mod home;
 pub enum AppState {
     //states' enum
     Home,
-    Free,
-    Ranking,
+    CountDown,
+    Game,
+    Clear,
     // Paused,
 }
 

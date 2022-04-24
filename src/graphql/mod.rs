@@ -1,16 +1,28 @@
 use anyhow::{bail, Result};
 use serde::Serialize;
-use std::fs::File;
+use std::env;
+use std::fs::{
+    remove_file,
+    File,
+};
 use std::io::BufWriter;
 use std::process::Command;
 
-pub fn send_clear_time(token: String, clear_time: i64) -> Result<()> {
-    json_to_file(token, clear_time)?;
+pub fn send_clear_time(clear_time: i64) -> Result<()> {
+    let args: Vec<String> = env::args().collect();
+    let token = args.get(1).expect("Error: Too few arguments.");
+    json_to_file(token.to_string(), clear_time)?;
 
     let target = "./graphql.exe";
-    match Command::new(target).arg("create_score").spawn() {
-        Ok(_) => Ok(()),
+    match Command::new(target).arg("create_score").spawn().unwrap().wait() {
+        Ok(_) => {
+            remove_file("tmp/query.json")?;
+
+            Ok(())
+        },
         Err(err) => {
+            remove_file("tmp/query.json")?;
+
             let err_msg = format!(
                 "Error: Could not launch e-Hanoi.\ndetails...{}\n指定されたファイル: {}",
                 err, target

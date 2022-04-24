@@ -1,5 +1,7 @@
-use super::AppState;
+use super::{game, AppState};
 use bevy::{app::AppExit, prelude::*};
+
+pub struct SpaceNum(pub i32);
 
 #[derive(Component)]
 pub struct HomeEntity;
@@ -37,6 +39,7 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
         horizontal: HorizontalAlign::Center,
     };
     for (tex, tra, col, mark) in button.iter() {
+        // タイトル画面にある塔のディスクの文字
         commands
             .spawn_bundle(Text2dBundle {
                 text: Text::with_section(
@@ -55,6 +58,8 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             .insert(HomeEntity)
             .insert(*mark);
+
+        // タイトル画面にある塔のディスク
         commands
             .spawn_bundle(SpriteBundle {
                 sprite: Sprite {
@@ -71,10 +76,12 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             .insert(HomeEntity)
             .insert(*mark);
     }
+
+    // タイトル画面にある塔のポール
     commands
         .spawn_bundle(SpriteBundle {
             sprite: Sprite {
-                color: Color::ANTIQUE_WHITE,
+                color: Color::BISQUE,
                 ..Default::default()
             },
             transform: Transform {
@@ -85,6 +92,8 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..Default::default()
         })
         .insert(HomeEntity);
+
+    // タイトル画面にある"e-Hanoi"のテキスト
     commands
         .spawn_bundle(Text2dBundle {
             text: Text::with_section("e-Hanoi", text_style, text_alignment),
@@ -97,18 +106,18 @@ pub fn spawn_entities(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(HomeEntity);
 }
 
-pub fn cursol_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input<KeyCode>>) {
+pub fn cursor_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Down) {
-        if button_now.0 == ButtonMarker::Exit {
-            button_now.0 = ButtonMarker::Free;
-        } else if button_now.0 == ButtonMarker::Free {
-            button_now.0 = ButtonMarker::Ranking;
+        match button_now.0 {
+            ButtonMarker::Exit => button_now.0 = ButtonMarker::Free,
+            ButtonMarker::Free => button_now.0 = ButtonMarker::Ranking,
+            ButtonMarker::Ranking => {}
         }
     } else if keyboard_input.just_pressed(KeyCode::Up) {
-        if button_now.0 == ButtonMarker::Free {
-            button_now.0 = ButtonMarker::Exit;
-        } else if button_now.0 == ButtonMarker::Ranking {
-            button_now.0 = ButtonMarker::Free;
+        match button_now.0 {
+            ButtonMarker::Exit => {}
+            ButtonMarker::Free => button_now.0 = ButtonMarker::Exit,
+            ButtonMarker::Ranking => button_now.0 = ButtonMarker::Free,
         }
     }
 }
@@ -116,8 +125,8 @@ pub fn cursol_input(mut button_now: ResMut<ButtonNow>, keyboard_input: Res<Input
 pub fn cursor_movement(mut texts: Query<(&mut Text, &ButtonMarker)>, button_now: Res<ButtonNow>) {
     for (mut text, mark) in texts.iter_mut() {
         if *mark == button_now.0 {
-            (*text).sections[0].style.color = Color::BLACK;
-            (*text).sections[0].style.font_size = 65.0;
+            (*text).sections[0].style.color = Color::INDIGO;
+            (*text).sections[0].style.font_size = 60.0;
         } else {
             (*text).sections[0].style.color = Color::WHITE;
             (*text).sections[0].style.font_size = 50.0;
@@ -130,17 +139,25 @@ pub fn choosing_input(
     keyboard_input: Res<Input<KeyCode>>,
     mut event_writer: EventWriter<bevy::app::AppExit>,
     mut app_state: ResMut<State<AppState>>,
+    mut is_ranking: ResMut<game::IsRanking>,
+    mut space_num: ResMut<SpaceNum>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        match button_now.0 {
-            ButtonMarker::Exit => {
-                event_writer.send(AppExit);
-            }
-            ButtonMarker::Free => {
-                app_state.set(AppState::Free).unwrap();
-            }
-            ButtonMarker::Ranking => {
-                app_state.set(AppState::Ranking).unwrap();
+        if space_num.0 < 1 {
+            space_num.0 += 1;
+        } else {
+            match button_now.0 {
+                ButtonMarker::Exit => {
+                    event_writer.send(AppExit);
+                }
+                ButtonMarker::Free => {
+                    is_ranking.0 = false;
+                    app_state.set(AppState::CountDown).unwrap();
+                }
+                ButtonMarker::Ranking => {
+                    is_ranking.0 = true;
+                    app_state.set(AppState::CountDown).unwrap();
+                }
             }
         }
     }
