@@ -5,7 +5,14 @@ use rand::thread_rng;
 
 use super::DiskNumber;
 
+pub struct Timer(pub Time);
+
+pub struct StartTime(pub f64);
+
 pub struct IsHolding(pub bool);
+
+#[derive(Component)]
+pub struct TimeText;
 
 #[derive(Component)]
 pub struct Cursor;
@@ -105,20 +112,44 @@ pub fn spawn_entities(
     disk_order.shuffle(&mut rng);
     for i in [0, 1, 2].iter() {
         // 三つのロッド
-        commands.spawn_bundle(SpriteBundle {
-            sprite: Sprite {
-                color: Color::BISQUE,
+        commands
+            .spawn_bundle(SpriteBundle {
+                sprite: Sprite {
+                    color: Color::BISQUE,
+                    ..Default::default()
+                },
+                transform: Transform {
+                    translation: Vec3::new((-400 + i * 400) as f32, -25.0, 8.0),
+                    scale: Vec3::new(40.0, 490.0, 0.0),
+                    ..Default::default()
+                },
                 ..Default::default()
-            },
+            })
+            .insert(GameEntity);
+    }
+
+    // timeを表示するテキスト
+    commands
+        .spawn_bundle(Text2dBundle {
+            text: Text::with_section(
+                "",
+                TextStyle {
+                    color: Color::BLACK,
+                    font_size: 40.0,
+                    ..text_style.clone()
+                },
+                TextAlignment {
+                    vertical: VerticalAlign::Top,
+                    horizontal: HorizontalAlign::Right,
+                },
+            ),
             transform: Transform {
-                translation: Vec3::new((-400 + i * 400) as f32, -25.0, 8.0),
-                scale: Vec3::new(40.0, 490.0, 0.0),
+                translation: Vec3::new(550.0, 330.0, 10.0),
                 ..Default::default()
             },
             ..Default::default()
         })
-        .insert(GameEntity);
-    }
+        .insert(TimeText);
 
     // どのポールを選んでいるかを示すスプライト
     commands
@@ -254,8 +285,14 @@ fn disk_text(text_style: TextStyle, text_alignment: TextAlignment, disk: i32) ->
     }
 }
 
-pub fn cursor_set(mut cursor_rod: ResMut<CursorRod>) {
+pub fn setup(
+    mut cursor_rod: ResMut<CursorRod>,
+    mut timer: ResMut<Timer>,
+    mut start_time: ResMut<StartTime>,
+) {
     cursor_rod.0 = WhichRod::Center;
+    timer.0.update();
+    start_time.0 = timer.0.time_since_startup().as_secs_f64();
 }
 
 pub fn cursored_disk(
@@ -338,6 +375,20 @@ pub fn top_disk(mut disks: Query<(&Position, &mut IsTop)>) {
     }
 }
 
+pub fn output_time(
+    mut time: ResMut<Timer>,
+    start_time: Res<StartTime>,
+    mut text: Query<&mut Text, With<TimeText>>,
+) {
+    time.0.update();
+    for mut tex in text.iter_mut() {
+        tex.sections[0].value = format!(
+            "{}",
+            (time.0.time_since_startup().as_secs_f64() - start_time.0) as i64
+        );
+    }
+}
+
 pub fn cursored_disk_change(mut disks: Query<(&IsCursored, &mut Text)>) {
     for (cur_boo, mut text) in disks.iter_mut() {
         if cur_boo.0 {
@@ -350,26 +401,23 @@ pub fn cursored_disk_change(mut disks: Query<(&IsCursored, &mut Text)>) {
     }
 }
 
-pub fn cursor_change(
-    cursor_now: Res<CursorRod>,
-    mut cursor: Query<&mut Transform, With<Cursor>>,
-){
+pub fn cursor_change(cursor_now: Res<CursorRod>, mut cursor: Query<&mut Transform, With<Cursor>>) {
     match cursor_now.0 {
         WhichRod::Left => {
-            for mut tra in cursor.iter_mut(){
+            for mut tra in cursor.iter_mut() {
                 (*tra).translation = Vec3::new(-400.0, -25.0, 7.0)
             }
-        },
+        }
         WhichRod::Center => {
-            for mut tra in cursor.iter_mut(){
+            for mut tra in cursor.iter_mut() {
                 (*tra).translation = Vec3::new(0.0, -25.0, 7.0)
             }
-        },
+        }
         WhichRod::Right => {
-            for mut tra in cursor.iter_mut(){
+            for mut tra in cursor.iter_mut() {
                 (*tra).translation = Vec3::new(400.0, -25.0, 7.0)
             }
-        },
+        }
     }
 }
 
