@@ -8,6 +8,9 @@ use super::DiskNumber;
 pub struct IsHolding(pub bool);
 
 #[derive(Component)]
+pub struct Cursor;
+
+#[derive(Component)]
 pub struct IsCursored(pub bool);
 
 #[derive(Component)]
@@ -38,7 +41,7 @@ pub enum DiskCondition {
 
 pub struct WhereDiskWas(pub Position);
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Component)]
 pub enum WhichRod {
     Left,
     Center,
@@ -64,6 +67,7 @@ pub enum Label {
     TopDisk,
     CursoredDisk,
     CursoredDiskChange,
+    CursorChange,
     Input,
 }
 
@@ -99,6 +103,38 @@ pub fn spawn_entities(
     let mut disk_order: Vec<i32> = (0..disk_number.0).collect();
     let die = Uniform::<i32>::from(0..3);
     disk_order.shuffle(&mut rng);
+    for i in [0, 1, 2].iter() {
+        // 三つのロッド
+        commands.spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::BISQUE,
+                ..Default::default()
+            },
+            transform: Transform {
+                translation: Vec3::new((-400 + i * 400) as f32, -25.0, 8.0),
+                scale: Vec3::new(40.0, 490.0, 0.0),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .insert(GameEntity);
+    }
+
+    // どのポールを選んでいるかを示すスプライト
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::DARK_GREEN,
+                ..Default::default()
+            },
+            transform: Transform {
+                scale: Vec3::new(50.0, 500.0, 0.0),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .insert(Cursor);
+
     for i in disk_order {
         match die.sample(&mut rng) {
             0 => {
@@ -305,12 +341,35 @@ pub fn top_disk(mut disks: Query<(&Position, &mut IsTop)>) {
 pub fn cursored_disk_change(mut disks: Query<(&IsCursored, &mut Text)>) {
     for (cur_boo, mut text) in disks.iter_mut() {
         if cur_boo.0 {
-            (*text).sections[0].style.color = Color::INDIGO;
-            (*text).sections[0].style.font_size = 60.0;
+            (*text).sections[0].style.color = Color::BLACK;
+            (*text).sections[0].style.font_size = 70.0;
         } else {
             (*text).sections[0].style.color = Color::WHITE;
             (*text).sections[0].style.font_size = 50.0;
         }
+    }
+}
+
+pub fn cursor_change(
+    cursor_now: Res<CursorRod>,
+    mut cursor: Query<&mut Transform, With<Cursor>>,
+){
+    match cursor_now.0 {
+        WhichRod::Left => {
+            for mut tra in cursor.iter_mut(){
+                (*tra).translation = Vec3::new(-400.0, -25.0, 7.0)
+            }
+        },
+        WhichRod::Center => {
+            for mut tra in cursor.iter_mut(){
+                (*tra).translation = Vec3::new(0.0, -25.0, 7.0)
+            }
+        },
+        WhichRod::Right => {
+            for mut tra in cursor.iter_mut(){
+                (*tra).translation = Vec3::new(400.0, -25.0, 7.0)
+            }
+        },
     }
 }
 
@@ -324,10 +383,10 @@ pub fn text_translation(mut text: Query<(&Position, &mut Transform), With<Text>>
         match pos.height {
             DiskCondition::Placed(i) => {
                 transform.translation =
-                    Vec3::new((-400 + rod_num * 400) as f32, (-240 + i * 50) as f32, 10.0)
+                    Vec3::new((-400 + rod_num * 400) as f32, (-270 + i * 50) as f32, 10.0)
             }
             DiskCondition::Lifted => {
-                transform.translation = Vec3::new((-400 + rod_num * 400) as f32, 240.0, 10.0)
+                transform.translation = Vec3::new((-400 + rod_num * 400) as f32, 260.0, 10.0)
             }
         }
     }
@@ -343,10 +402,10 @@ pub fn rect_translation(mut rect: Query<(&Position, &mut Transform), With<Sprite
         match pos.height {
             DiskCondition::Placed(i) => {
                 transform.translation =
-                    Vec3::new((-400 + rod_num * 400) as f32, (-240 + i * 50) as f32, 9.0)
+                    Vec3::new((-400 + rod_num * 400) as f32, (-270 + i * 50) as f32, 9.0)
             }
             DiskCondition::Lifted => {
-                transform.translation = Vec3::new((-400 + rod_num * 400) as f32, 240.0, 9.0)
+                transform.translation = Vec3::new((-400 + rod_num * 400) as f32, 260.0, 9.0)
             }
         }
     }
@@ -401,6 +460,7 @@ pub fn input(
             for (mut pos, _, num, _) in disks.iter_mut() {
                 if pos.height == DiskCondition::Lifted {
                     if num.0 > top_num {
+                        cursor_rod.0 = where_disk_was.0.rod.clone();
                         *pos = where_disk_was.0.clone();
                     } else {
                         pos.height = DiskCondition::Placed(disk_num + 1);

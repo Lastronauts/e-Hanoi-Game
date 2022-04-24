@@ -7,7 +7,6 @@ use bevy::{core::FixedTimestep, prelude::*};
 use state::*;
 
 fn main() {
-    println!("main!");
     App::new()
         .insert_resource(WindowDescriptor {
             title: "e-Hanoi".to_string(),
@@ -78,6 +77,11 @@ fn main() {
                 .with_system(
                     game::cursored_disk_change
                         .label(game::Label::CursoredDiskChange)
+                        .after(game::Label::CursoredDisk),
+                )
+                .with_system(
+                    game::cursor_change
+                        .label(game::Label::CursorChange)
                         .after(game::Label::CursoredDisk),
                 )
                 .with_system(
