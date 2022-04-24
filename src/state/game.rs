@@ -530,11 +530,11 @@ pub fn input(
                 }
             }
         } else {
-            is_holding.0 = true;
             for (mut pos, cur_boo, _, _) in disks.iter_mut() {
                 if cur_boo.0 {
                     where_disk_was.0 = (*pos).clone();
                     pos.height = DiskCondition::Lifted;
+                    is_holding.0 = true;
                 }
             }
         }
