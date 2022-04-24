@@ -1,21 +1,18 @@
 [package]
-name = "e-hanoi-game"
+name = "graphql"
 version = "0.1.0"
-authors = ["Lastronauts <lastronauts@outlook.jp>"]
 edition = "2021"
-build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-rt = "2.7.0"
+actix-web = "4.0.1"
 anyhow = "1.0.56"
-bevy = "0.6.1"
+graphql_client = "0.10.0"
+reqwest = { version = "0.11.10", features = ["json"] }
 serde = "1.0.136"
 serde_json = "1.0.79"
-rand = "0.8.5"
-
-[build-dependencies]
-winres = "0.1"
 
 [profile.release]
 opt-level = "z"
