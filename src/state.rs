@@ -1,4 +1,5 @@
 // use bevy::prelude::*;
+pub mod clear;
 pub mod countdown;
 pub mod game;
 pub mod home;

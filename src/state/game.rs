@@ -11,6 +11,8 @@ pub struct Timer(pub Time);
 
 pub struct StartTime(pub f64);
 
+pub struct TimeNow(pub i64);
+
 pub struct IsHolding(pub bool);
 
 #[derive(Component)]
@@ -294,7 +296,14 @@ pub fn setup(
     mut cursor_rod: ResMut<CursorRod>,
     mut timer: ResMut<Timer>,
     mut start_time: ResMut<StartTime>,
+    mut rods: ResMut<Rods>,
 ) {
+    rods.left.disks = Vec::new();
+    rods.left.disk_num = 0;
+    rods.center.disks = Vec::new();
+    rods.center.disk_num = 0;
+    rods.right.disks = Vec::new();
+    rods.right.disk_num = 0;
     cursor_rod.0 = WhichRod::Center;
     timer.0.update();
     start_time.0 = timer.0.time_since_startup().as_secs_f64();
@@ -383,14 +392,13 @@ pub fn top_disk(mut disks: Query<(&Position, &mut IsTop)>) {
 pub fn output_time(
     mut time: ResMut<Timer>,
     start_time: Res<StartTime>,
+    mut time_now: ResMut<TimeNow>,
     mut text: Query<&mut Text, With<TimeText>>,
 ) {
     time.0.update();
+    time_now.0 = (time.0.time_since_startup().as_secs_f64() - start_time.0) as i64;
     for mut tex in text.iter_mut() {
-        tex.sections[0].value = format!(
-            "{}",
-            (time.0.time_since_startup().as_secs_f64() - start_time.0) as i64
-        );
+        tex.sections[0].value = format!("{}", time_now.0,);
     }
 }
 

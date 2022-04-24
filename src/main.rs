@@ -14,6 +14,7 @@ fn main() {
         })
         .insert_resource(ClearColor(Color::ANTIQUE_WHITE))
         .insert_resource(home::ButtonNow(home::ButtonMarker::Free))
+        .insert_resource(home::SpaceNum(1))
         .insert_resource(DiskNumber(3))
         .insert_resource(game::CursorRod(game::WhichRod::Center))
         .insert_resource(game::Rods {
@@ -37,6 +38,7 @@ fn main() {
             height: game::DiskCondition::Placed(0),
         }))
         .insert_resource(game::StartTime(0.0))
+        .insert_resource(game::TimeNow(0))
         .insert_resource(game::IsRanking(false))
         .add_plugins(DefaultPlugins)
         .add_state(AppState::Home)
@@ -102,5 +104,8 @@ fn main() {
                 .with_system(game::text_translation),
         )
         .add_system_set(SystemSet::on_exit(AppState::Game).with_system(game::despawn_entities))
+        .add_system_set(SystemSet::on_enter(AppState::Clear).with_system(clear::spawn))
+        .add_system_set(SystemSet::on_update(AppState::Clear).with_system(clear::input))
+        .add_system_set(SystemSet::on_exit(AppState::Clear).with_system(clear::despawn))
         .run();
 }

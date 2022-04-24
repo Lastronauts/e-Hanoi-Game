@@ -1,6 +1,8 @@
 use super::{game, AppState};
 use bevy::{app::AppExit, prelude::*};
 
+pub struct SpaceNum(pub i32);
+
 #[derive(Component)]
 pub struct HomeEntity;
 
@@ -138,19 +140,24 @@ pub fn choosing_input(
     mut event_writer: EventWriter<bevy::app::AppExit>,
     mut app_state: ResMut<State<AppState>>,
     mut is_ranking: ResMut<game::IsRanking>,
+    mut space_num: ResMut<SpaceNum>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        match button_now.0 {
-            ButtonMarker::Exit => {
-                event_writer.send(AppExit);
-            }
-            ButtonMarker::Free => {
-                is_ranking.0 = false;
-                app_state.set(AppState::CountDown).unwrap();
-            }
-            ButtonMarker::Ranking => {
-                is_ranking.0 = true;
-                app_state.set(AppState::CountDown).unwrap();
+        if space_num.0 < 1 {
+            space_num.0 += 1;
+        } else {
+            match button_now.0 {
+                ButtonMarker::Exit => {
+                    event_writer.send(AppExit);
+                }
+                ButtonMarker::Free => {
+                    is_ranking.0 = false;
+                    app_state.set(AppState::CountDown).unwrap();
+                }
+                ButtonMarker::Ranking => {
+                    is_ranking.0 = true;
+                    app_state.set(AppState::CountDown).unwrap();
+                }
             }
         }
     }
