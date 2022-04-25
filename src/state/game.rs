@@ -3,7 +3,7 @@ use rand::distributions::{Distribution, Uniform};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
-use super::{AppState, DiskNumber};
+use super::{AppState, DiskNumber, SpaceNum};
 
 pub struct IsRanking(pub bool);
 
@@ -297,6 +297,7 @@ pub fn setup(
     mut timer: ResMut<Timer>,
     mut start_time: ResMut<StartTime>,
     mut rods: ResMut<Rods>,
+    mut is_holding: ResMut<IsHolding>,
 ) {
     rods.left.disks = Vec::new();
     rods.left.disk_num = 0;
@@ -307,6 +308,7 @@ pub fn setup(
     cursor_rod.0 = WhichRod::Center;
     timer.0.update();
     start_time.0 = timer.0.time_since_startup().as_secs_f64();
+    is_holding.0 = false;
 }
 
 pub fn cursored_disk(
@@ -540,14 +542,26 @@ pub fn input(
     }
 }
 
-pub fn is_clear(disks: Query<(&IsTop, &Disk), With<Text>>, mut app_state: ResMut<State<AppState>>) {
-    let mut max = -1;
-    for (top_boo, num) in disks.iter() {
-        if top_boo.0 && max < num.0 {
-            max = num.0;
+pub fn is_clear(
+    disks: Query<(&Position, &Disk), With<Text>>,
+    mut app_state: ResMut<State<AppState>>,
+    disk_num: Res<DiskNumber>,
+    mut space_num: ResMut<SpaceNum>,
+) {
+    let mut clear = true;
+    for (pos, num) in disks.iter() {
+        if let DiskCondition::Placed(i) = pos.height {
+            if num.0 != (disk_num.0 - i - 1) {
+                clear = false;
+                break;
+            }
+        } else {
+            clear = false;
+            break;
         }
     }
-    if max == 0 {
+    if clear {
+        space_num.0 = 0;
         app_state.set(AppState::Clear).unwrap();
     }
 }

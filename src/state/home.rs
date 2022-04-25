@@ -1,7 +1,5 @@
-use super::{game, AppState};
+use super::{game, AppState, SpaceNum};
 use bevy::{app::AppExit, prelude::*};
-
-pub struct SpaceNum(pub i32);
 
 #[derive(Component)]
 pub struct HomeEntity;

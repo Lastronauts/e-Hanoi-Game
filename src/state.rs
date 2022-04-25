@@ -4,6 +4,8 @@ pub mod countdown;
 pub mod game;
 pub mod home;
 
+pub struct SpaceNum(pub i32);
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AppState {
     //states' enum

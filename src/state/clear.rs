@@ -4,8 +4,7 @@ use crate::graphql::send_clear_time;
 
 use super::{
     game::{self, TimeNow},
-    home::SpaceNum,
-    AppState,
+    AppState, SpaceNum,
 };
 
 #[derive(Component)]
@@ -70,8 +69,12 @@ pub fn input(
     mut space_num: ResMut<SpaceNum>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        space_num.0 = 0;
-        app_state.set(AppState::Home).unwrap();
+        if space_num.0 < 1 {
+            space_num.0 += 1;
+        } else {
+            space_num.0 = 0;
+            app_state.set(AppState::Home).unwrap();
+        }
     }
 }
 
