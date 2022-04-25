@@ -15,7 +15,7 @@ fn main() {
         .insert_resource(ClearColor(Color::ANTIQUE_WHITE))
         .insert_resource(home::ButtonNow(home::ButtonMarker::Free))
         .insert_resource(SpaceNum(1))
-        .insert_resource(DiskNumber(5))
+        .insert_resource(DiskNumber(8))
         .insert_resource(game::CursorRod(game::WhichRod::Center))
         .insert_resource(game::Rods {
             left: game::Rod {
